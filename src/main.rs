@@ -8,6 +8,9 @@ use route_recognizer::Params;
 use router::Router;
 use std::sync::Arc;
 
+use std::env;
+use std::process::exit;
+
 mod handler;
 mod router;
 
@@ -21,9 +24,30 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    print!("\ncurl http://localhost:8080/test\n");
-    print!("curl http://localhost:8080/params/1234\n");
-    print!("curl -X POST http://localhost:8080/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n");
+    let mut port = 8080; // Default port
+    for arg in env::args().skip(1) {
+        if arg.starts_with("--port=") || arg.starts_with("-p=") {
+            let port_str = arg.splitn(2, '=').nth(1).unwrap();
+            let parsed_port = port_str.parse::<u16>();
+            if let Err(err) = parsed_port {
+                eprintln!("Error parsing port: {}", err);
+                exit(1);
+            }
+            port = parsed_port.unwrap();
+            break; // Exit after finding the port argument
+        }
+    }
+
+    println!("Using port: {}", port);
+    let str_port = port.to_string();
+    println!("The string value is: {}", str_port);
+
+    println!("\ncurl http://localhost:{}/test\n", &str_port);
+    println!("curl http://localhost:{}/params/1234\n", &str_port);
+    println!(
+        "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n",
+        &str_port
+    );
 
     let some_state = "state".to_string();
 
@@ -46,7 +70,9 @@ async fn main() {
         }
     });
 
-    let addr = "0.0.0.0:8080".parse().expect("address creation works");
+    let addr = format!("0.0.0.0:{}", port)
+        .parse()
+        .expect("address creation works");
     let server = Server::bind(&addr).serve(new_service);
     println!("Listening on http://{}", addr);
     let _ = server.await;
@@ -116,13 +142,13 @@ mod tests {
 
     #[test]
     fn curl_test() {
-      let url = "http://localhost:8080/test";
-      let mut command = Command::new("curl");
-      command.arg(url);
+        let url = "http://localhost:8080/test";
+        let mut command = Command::new("curl");
+        command.arg(url);
 
-      // Capture output (optional)
-      let output = command.output().unwrap();
-      println!("Output: {}", String::from_utf8_lossy(&output.stdout));
+        // Capture output (optional)
+        let output = command.output().unwrap();
+        println!("Output: {}", String::from_utf8_lossy(&output.stdout));
     }
     #[test]
     fn test_add() {
