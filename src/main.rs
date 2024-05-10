@@ -25,9 +25,21 @@ pub struct AppState {
 #[tokio::main]
 async fn main() {
     let mut port = 8080; // Default port
+    let mut verbose = false;
+    let mut port_str: &str = "8080";
+    let mut assign_next = false;
     for arg in env::args().skip(1) {
+        if assign_next {
+            port = arg.parse::<u16>().unwrap();
+            break;
+        }
+
+        if arg.starts_with("--verbose") || arg.starts_with("-vv") {
+            verbose = true;
+            //break;
+        }
         if arg.starts_with("--port=") || arg.starts_with("-p=") {
-            let port_str = arg.splitn(2, '=').nth(1).unwrap();
+            port_str = arg.splitn(2, '=').nth(1).unwrap();
             let parsed_port = port_str.parse::<u16>();
             if let Err(err) = parsed_port {
                 eprintln!("Error parsing port: {}", err);
@@ -36,19 +48,26 @@ async fn main() {
             port = parsed_port.unwrap();
             break; // Exit after finding the port argument
         }
+        if arg.starts_with("--port") || arg.starts_with("-p") {
+            //print!("arg={}", arg);
+            assign_next = true;
+            //print!("assign_next={}", assign_next);
+            //break; // Exit after finding the port argument
+        }
     }
 
     //println!("Using port: {}", port);
     let str_port = port.to_string();
     //println!("The string value is: {}", str_port);
 
-    println!("\ncurl http://localhost:{}/test\n", &str_port);
-    println!("curl http://localhost:{}/params/1234\n", &str_port);
-    println!(
+    if verbose {
+        println!("\ncurl http://localhost:{}/test\n", &str_port);
+        println!("curl http://localhost:{}/params/1234\n", &str_port);
+        println!(
         "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n",
         &str_port
     );
-
+    }
     let some_state = "state".to_string();
 
     let mut router: Router = Router::new();
@@ -74,7 +93,7 @@ async fn main() {
         .parse()
         .expect("address creation works");
     let server = Server::bind(&addr).serve(new_service);
-    println!("Listening on http://{}", addr);
+    println!("http://{}", addr);
     let _ = server.await;
 }
 
