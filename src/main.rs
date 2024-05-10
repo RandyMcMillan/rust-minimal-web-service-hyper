@@ -26,6 +26,7 @@ pub struct AppState {
 async fn main() {
     let mut port = 8080; // Default port
     let mut verbose = false;
+    #[allow(unused_assignments)]
     let mut port_str: &str = "8080";
     let mut assign_next = false;
     for arg in env::args().skip(1) {
@@ -61,10 +62,10 @@ async fn main() {
     //println!("The string value is: {}", str_port);
 
     if verbose {
-        println!("\ncurl http://localhost:{}/test\n", &str_port);
-        println!("curl http://localhost:{}/params/1234\n", &str_port);
+        println!("curl http://localhost:{}/test", &str_port);
+        println!("curl http://localhost:{}/params/1234", &str_port);
         println!(
-        "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n",
+        "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'",
         &str_port
     );
     }

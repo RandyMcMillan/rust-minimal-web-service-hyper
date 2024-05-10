@@ -23,6 +23,9 @@ lint:
 	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
-	cargo run
+	@cargo run -q
+
+run:
+	@cargo -q run -- --port 3000
 
 .PHONY: build test docs style-check lint
