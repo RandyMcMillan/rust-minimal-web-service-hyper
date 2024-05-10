@@ -38,9 +38,9 @@ async fn main() {
         }
     }
 
-    println!("Using port: {}", port);
+    //println!("Using port: {}", port);
     let str_port = port.to_string();
-    println!("The string value is: {}", str_port);
+    //println!("The string value is: {}", str_port);
 
     println!("\ncurl http://localhost:{}/test\n", &str_port);
     println!("curl http://localhost:{}/params/1234\n", &str_port);
