@@ -21,6 +21,10 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
+    print!("\ncurl http://localhost:8080/test\n");
+    print!("curl http://localhost:8080/params/1234\n");
+    print!("curl -X POST http://localhost:8080/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n");
+
     let some_state = "state".to_string();
 
     let mut router: Router = Router::new();
@@ -89,5 +93,47 @@ impl Context {
             }
         };
         Ok(serde_json::from_slice(&body_bytes)?)
+    }
+}
+
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// This is a really bad adding function, its purpose is to fail in this
+// example.
+#[allow(dead_code)]
+fn bad_add(a: i32, b: i32) -> i32 {
+    a - b
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    use std::process::Command;
+
+    #[test]
+    fn curl_test() {
+      let url = "http://localhost:8080/test";
+      let mut command = Command::new("curl");
+      command.arg(url);
+
+      // Capture output (optional)
+      let output = command.output().unwrap();
+      println!("Output: {}", String::from_utf8_lossy(&output.stdout));
+    }
+    #[test]
+    fn test_add() {
+        assert_eq!(add(1, 2), 3);
+    }
+
+    #[test]
+    #[should_panic(expected = "assertion `left == right` failed\n  left: -1\n right: 3")]
+    fn test_bad_add() {
+        // This assert would fire and test will fail.
+        // Please note, that private functions can be tested too!
+        assert_eq!(bad_add(1, 2), 3);
     }
 }
