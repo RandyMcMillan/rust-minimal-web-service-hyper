@@ -145,10 +145,17 @@ mod tests {
         let url = "http://localhost:8080/test";
         let mut command = Command::new("curl");
         command.arg(url);
+        let _output = command.output().unwrap();
 
-        // Capture output (optional)
-        let output = command.output().unwrap();
-        println!("Output: {}", String::from_utf8_lossy(&output.stdout));
+        let url = "http://localhost:8080/params/1234";
+        let mut command = Command::new("curl");
+        command.arg(url);
+        let _output = command.output().unwrap();
+
+        let url = "http://localhost:8080/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n";
+        let mut command = Command::new("curl");
+        command.arg(url);
+        let _output = command.output().unwrap();
     }
     #[test]
     fn test_add() {

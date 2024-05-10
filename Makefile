@@ -4,9 +4,12 @@ build:
 clean:
 	@cargo clean
 
-TESTS = ""
+TEST = "curl_test"
 test:
-	@cargo test $(TESTS) --offline --lib -- --color=always --nocapture
+	@cargo test $(TEST) --offline       -- --color=always --nocapture || \
+		cargo test --tests
+tests:
+	@cargo test --tests --offline       -- --color=always --nocapture
 
 docs: build
 	@cargo doc --no-deps
