@@ -23,7 +23,7 @@ lint:
 	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
-	@cargo run -q
+	@cargo run -q --bin gnostr-server
 
 run:
 	@cargo -q run -- --port 8080
