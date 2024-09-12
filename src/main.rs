@@ -1,14 +1,14 @@
-use bytes::Bytes;
+use context::*;
 use hyper::{
-    body::to_bytes,
     service::{make_service_fn, service_fn},
-    Body, Request, Server,
+    Request, Server,
 };
-use route_recognizer::Params;
 use router::Router;
 use std::env;
 use std::process::exit;
 use std::sync::Arc;
+
+mod context;
 mod handler;
 mod router;
 
@@ -16,11 +16,6 @@ use sysinfo::{get_current_pid, Pid, System};
 
 type Response = hyper::Response<hyper::Body>;
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
-
-#[derive(Clone, Debug)]
-pub struct AppState {
-    pub state_thing: String,
-}
 
 #[tokio::main]
 async fn main() {
@@ -132,37 +127,6 @@ async fn route(
     Ok(resp)
 }
 
-#[derive(Debug)]
-pub struct Context {
-    pub state: AppState,
-    pub req: Request<Body>,
-    pub params: Params,
-    body_bytes: Option<Bytes>,
-}
-
-impl Context {
-    pub fn new(state: AppState, req: Request<Body>, params: Params) -> Context {
-        Context {
-            state,
-            req,
-            params,
-            body_bytes: None,
-        }
-    }
-
-    pub async fn body_json<T: serde::de::DeserializeOwned>(&mut self) -> Result<T, Error> {
-        let body_bytes = match self.body_bytes {
-            Some(ref v) => v,
-            _ => {
-                let body = to_bytes(self.req.body_mut()).await?;
-                self.body_bytes = Some(body);
-                self.body_bytes.as_ref().expect("body_bytes was set above")
-            }
-        };
-        Ok(serde_json::from_slice(&body_bytes)?)
-    }
-}
-
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
 }
@@ -177,7 +141,7 @@ fn bad_add(a: i32, b: i32) -> i32 {
 #[cfg(test)]
 mod tests {
     // Note this useful idiom: importing names from outer (for mod tests) scope.
-    use super::*;
+    //use super::*;
 
     use std::process::Command;
 
