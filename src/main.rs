@@ -1,16 +1,6 @@
 #![allow(unreachable_code)]
 use std::env;
-use port_selector::is_free;
-use port_selector::select_from_given_port;
-async fn port_is_available(mut port: u16) -> u16 {
-    if is_free(port){
-        port
-    }else{
-        port = select_from_given_port(port).unwrap();
-        port
-    }
-}
-
+use gnostr_server::port_selector::port_is_available;
 #[tokio::main]
 async fn main() {
     let mut port = 8080;

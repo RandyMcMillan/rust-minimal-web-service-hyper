@@ -1,6 +1,8 @@
 #![warn(missing_docs)]
 //! gnostr: hypbrid git+nostr relay
 //!
+/// pub mod port_selector;
+pub mod port_selector;
 /// pub mod context;
 pub mod context;
 /// pub mod handler;
