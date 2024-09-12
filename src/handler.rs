@@ -2,6 +2,10 @@ use crate::{Context, Response};
 use hyper::StatusCode;
 use serde::Deserialize;
 
+pub async fn help(ctx: Context) -> String {
+    format!("help called, state_thing was: {}", ctx.state.state_thing)
+}
+
 pub async fn test_handler(ctx: Context) -> String {
     format!("test called, state_thing was: {}", ctx.state.state_thing)
 }

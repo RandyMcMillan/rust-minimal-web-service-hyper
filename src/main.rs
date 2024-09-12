@@ -25,6 +25,7 @@ pub struct AppState {
 #[tokio::main]
 async fn main() {
     let mut port = 8080; // Default port
+    let mut help = false;
     let mut verbose = false;
     #[allow(unused_assignments)]
     let mut port_str: &str = "8080";
@@ -34,10 +35,11 @@ async fn main() {
             port = arg.parse::<u16>().unwrap();
             break;
         }
-
+        if arg.starts_with("--help") || arg.starts_with("-h") {
+            help = true;
+        }
         if arg.starts_with("--verbose") || arg.starts_with("-vv") {
             verbose = true;
-            //break;
         }
         if arg.starts_with("--port=") || arg.starts_with("-p=") {
             port_str = arg.splitn(2, '=').nth(1).unwrap();
@@ -50,18 +52,19 @@ async fn main() {
             break; // Exit after finding the port argument
         }
         if arg.starts_with("--port") || arg.starts_with("-p") {
-            //print!("arg={}", arg);
             assign_next = true;
-            //print!("assign_next={}", assign_next);
-            //break; // Exit after finding the port argument
         }
     }
 
-    //println!("Using port: {}", port);
     let str_port = port.to_string();
-    //println!("The string value is: {}", str_port);
-
+    let mut some_state = "state".to_string();
+    if help {
+        some_state = "help".to_string();
+        println!("curl http://localhost:{}/help", &str_port);
+    }
     if verbose {
+        some_state = "verbose".to_string();
+        println!("curl http://localhost:{}/help", &str_port);
         println!("curl http://localhost:{}/test", &str_port);
         println!("curl http://localhost:{}/params/1234", &str_port);
         println!(
@@ -69,9 +72,9 @@ async fn main() {
             &str_port
         );
     }
-    let some_state = "state".to_string();
 
     let mut router: Router = Router::new();
+    router.get("/help", Box::new(handler::help));
     router.get("/test", Box::new(handler::test_handler));
     router.post("/send", Box::new(handler::send_handler));
     router.get("/params/:some_param", Box::new(handler::param_handler));
