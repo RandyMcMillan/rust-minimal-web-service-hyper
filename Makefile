@@ -26,8 +26,8 @@ dev:
 	@cargo run -q
 
 run:
-	@cargo -q run -- --port 3000
+	@cargo -q run -- --port 8080
 run-verbose:
-	@cargo -q run -- -vv --port 3000
+	@cargo -q run -- -vv --port 8080
 
 .PHONY: build test docs style-check lint
