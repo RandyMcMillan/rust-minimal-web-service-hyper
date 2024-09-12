@@ -79,7 +79,7 @@ async fn main() {
     match sysinfo::get_current_pid() {
         Ok(pid) => {
             let s = sysinfo::System::new_all();
-            if let Some(process) = s.process(sysinfo::Pid::from(pid)) {
+            if let Some(process) = s.process(pid) {
                 println!(
                     "{{\"{}\",\"{}\",\"{}\",\"{}\"}}",
                     process.name(),
