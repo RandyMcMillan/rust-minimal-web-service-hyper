@@ -11,7 +11,7 @@ test:
 tests:
 	@cargo test --tests --offline       -- --color=always --nocapture
 
-docs: build
+docs: lint build
 	@cargo doc --no-deps
 
 style-check:
@@ -20,7 +20,7 @@ style-check:
 
 lint:
 	@rustup component add clippy 2> /dev/null
-	cargo clippy --all-targets --all-features #-- -D warnings
+	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
 	@cargo run -q
