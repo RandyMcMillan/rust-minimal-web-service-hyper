@@ -6,13 +6,13 @@ use hyper::{
 };
 use route_recognizer::Params;
 use router::Router;
-use std::sync::Arc;
-
 use std::env;
 use std::process::exit;
-
+use std::sync::Arc;
 mod handler;
 mod router;
+
+use sysinfo::{get_current_pid, Pid, System};
 
 type Response = hyper::Response<hyper::Body>;
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -65,9 +65,9 @@ async fn main() {
         println!("curl http://localhost:{}/test", &str_port);
         println!("curl http://localhost:{}/params/1234", &str_port);
         println!(
-        "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'",
-        &str_port
-    );
+            "curl -X POST http://localhost:{}/send -d '{{\"name\": \"chip\", \"active\": true}}'",
+            &str_port
+        );
     }
     let some_state = "state".to_string();
 
@@ -94,7 +94,23 @@ async fn main() {
         .parse()
         .expect("address creation works");
     let server = Server::bind(&addr).serve(new_service);
-    println!("http://{}", addr);
+    match get_current_pid() {
+        Ok(pid) => {
+            let s = System::new_all();
+            if let Some(process) = s.process(Pid::from(pid)) {
+                println!(
+                    "{{\"{}\",\"{}\",\"{}\",\"{}\"}}",
+                    process.name(),
+                    pid,
+                    addr,
+                    port
+                );
+            }
+        }
+        Err(e) => {
+            println!("failed to get current pid: {}", e);
+        }
+    }
     let _ = server.await;
 }
 
