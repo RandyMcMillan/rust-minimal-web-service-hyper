@@ -1,3 +1,5 @@
+install: build
+	cargo install --bin gnostr-server --path .
 build:
 	@cargo build
 
