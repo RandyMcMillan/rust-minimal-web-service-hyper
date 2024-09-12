@@ -88,6 +88,6 @@ mod tests {
         command = Command::new("curl");
         command.args([url, s_flags, d_flag, data]);
         output = command.output().unwrap();
-        print!("{:?}\n", output);
+        println!("{:?}", output);
     }
 }
