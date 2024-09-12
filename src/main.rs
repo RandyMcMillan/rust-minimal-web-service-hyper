@@ -1,7 +1,8 @@
-use context::*;
+use crate::context::*;
+use crate::route::route;
 use hyper::{
     service::{make_service_fn, service_fn},
-    Request, Server,
+    Server,
 };
 use router::Router;
 use std::env;
@@ -11,6 +12,7 @@ use std::sync::Arc;
 mod context;
 mod handler;
 mod router;
+mod route;
 
 use sysinfo::{get_current_pid, Pid, System};
 
@@ -112,19 +114,6 @@ async fn main() {
         }
     }
     let _ = server.await;
-}
-
-async fn route(
-    router: Arc<Router>,
-    req: Request<hyper::Body>,
-    app_state: AppState,
-) -> Result<Response, Error> {
-    let found_handler = router.route(req.uri().path(), req.method());
-    let resp = found_handler
-        .handler
-        .invoke(Context::new(app_state, req, found_handler.params))
-        .await;
-    Ok(resp)
 }
 
 pub fn add(a: i32, b: i32) -> i32 {
