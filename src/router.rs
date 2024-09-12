@@ -31,6 +31,12 @@ pub struct Router {
     method_map: HashMap<Method, InternalRouter<Box<dyn Handler>>>,
 }
 
+impl Default for Router {
+     fn default() -> Self {
+         Self::new()
+     }
+ }
+
 impl Router {
     pub fn new() -> Router {
         Router {
@@ -41,14 +47,14 @@ impl Router {
     pub fn get(&mut self, path: &str, handler: Box<dyn Handler>) {
         self.method_map
             .entry(Method::GET)
-            .or_insert_with(InternalRouter::new)
+            .or_default()
             .add(path, handler)
     }
 
     pub fn post(&mut self, path: &str, handler: Box<dyn Handler>) {
         self.method_map
             .entry(Method::POST)
-            .or_insert_with(InternalRouter::new)
+            .or_default()
             .add(path, handler)
     }
 

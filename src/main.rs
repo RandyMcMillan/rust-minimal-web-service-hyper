@@ -19,7 +19,7 @@ async fn main() {
             verbose = true;
         }
         if arg.starts_with("--port=") || arg.starts_with("-p=") {
-            port_str = arg.splitn(2, '=').nth(1).unwrap();
+            port_str = arg.split_once('=').unwrap().1;
             let parsed_port = port_str.parse::<u16>();
             if let Err(err) = parsed_port {
                 eprintln!("Error parsing port: {}", err);
