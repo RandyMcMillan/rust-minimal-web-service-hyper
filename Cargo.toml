@@ -9,11 +9,20 @@ async-trait = "0.1"
 bytes = "0.5"
 futures = { version = "0.3.6", default-features = false, features = ["async-await"] }
 hyper = "0.13"
+port-selector = "0.1.6"
+port_check = "0.2.1"
 route-recognizer = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 sysinfo = "0.30.13"
 tokio = { version = "0.2", features = ["macros", "rt-threaded"] }
+
+
+[[bin]]
+name = "gnostr-server"
+path = "src/main.rs"
+#required-features = ["async"]
+doc = true
 
 [profile.dev]
 debug = 0

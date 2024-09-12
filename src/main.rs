@@ -1,7 +1,21 @@
+#![allow(unreachable_code)]
 use std::env;
+use port_selector::is_free;
+use port_selector::select_from_given_port;
+async fn port_is_available(mut port: u16) -> u16 {
+    if is_free(port){
+        port
+    }else{
+        port = select_from_given_port(port).unwrap();
+        port
+    }
+}
+
 #[tokio::main]
 async fn main() {
-    let mut port = 8080; // Default port
+    let mut port = 8080;
+    port = port_is_available(port).await;
+    #[allow(unreachable_code)]
     let mut help = false;
     let mut verbose = false;
     #[allow(unused_assignments)]
