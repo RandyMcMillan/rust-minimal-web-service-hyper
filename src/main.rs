@@ -1,5 +1,4 @@
 use std::env;
-use gnostr_server::*;
 #[tokio::main]
 async fn main() {
     let mut port = 8080; // Default port
@@ -53,22 +52,22 @@ async fn main() {
         );
     }
 
-    let mut router: router::Router = router::Router::new();
-    router.get("/help", Box::new(handler::help));
-    router.get("/test", Box::new(handler::test_handler));
-    router.post("/send", Box::new(handler::send_handler));
-    router.get("/params/:some_param", Box::new(handler::param_handler));
+    let mut router: gnostr_server::router::Router = gnostr_server::router::Router::new();
+    router.get("/help", Box::new(gnostr_server::handler::help));
+    router.get("/test", Box::new(gnostr_server::handler::test_handler));
+    router.post("/send", Box::new(gnostr_server::handler::send_handler));
+    router.get("/params/:some_param", Box::new(gnostr_server::handler::param_handler));
 
     let shared_router = std::sync::Arc::new(router);
     let new_service = hyper::service::make_service_fn(move |_| {
-        let app_state = context::AppState {
+        let app_state = gnostr_server::context::AppState {
             state_thing: some_state.clone(),
         };
 
         let router_capture = shared_router.clone();
         async {
-            Ok::<_, Error>(hyper::service::service_fn(move |req| {
-                route::route(router_capture.clone(), req, app_state.clone())
+            Ok::<_, gnostr_server::Error>(hyper::service::service_fn(move |req| {
+                gnostr_server::route::route(router_capture.clone(), req, app_state.clone())
             }))
         }
     });
