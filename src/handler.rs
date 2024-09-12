@@ -2,6 +2,7 @@ use crate::{context::Context, Response};
 use hyper::StatusCode;
 use serde::Deserialize;
 
+/// pub async fn help(ctx: Context) -> String
 pub async fn help(ctx: Context) -> String {
     format!(
         "help called, state_thing was: {}\nmore help...\neven more help...",
@@ -9,6 +10,7 @@ pub async fn help(ctx: Context) -> String {
     )
 }
 
+/// pub async fn test_handler(ctx: Context) -> String
 pub async fn test_handler(ctx: Context) -> String {
     format!("test called, state_thing was: {}", ctx.state.state_thing)
 }
@@ -19,6 +21,7 @@ struct SendRequest {
     active: bool,
 }
 
+/// pub async fn send_handler(mut ctx: Context) -> Response
 pub async fn send_handler(mut ctx: Context) -> Response {
     let body: SendRequest = match ctx.body_json().await {
         Ok(v) => v,
@@ -39,6 +42,7 @@ pub async fn send_handler(mut ctx: Context) -> Response {
     )
 }
 
+/// pub async fn param_handler(ctx: Context) -> String
 pub async fn param_handler(ctx: Context) -> String {
     let param = ctx.params.find("some_param").unwrap_or("empty");
     format!("param called, param was: {}", param)

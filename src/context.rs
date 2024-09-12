@@ -5,19 +5,26 @@ use route_recognizer::Params;
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 #[derive(Clone, Debug)]
+/// pub struct AppState
 pub struct AppState {
+    /// pub state_thing: String,
     pub state_thing: String,
 }
 
 #[derive(Debug)]
+/// pub struct Context
 pub struct Context {
+    /// pub state: AppState,
     pub state: AppState,
+    /// pub req: Request\<Body\>,
     pub req: Request<Body>,
+    /// pub params: Params,
     pub params: Params,
     body_bytes: Option<Bytes>,
 }
 
 impl Context {
+    /// pub fn new(state: AppState, req: Request\<Body\>, params: Params) -> Context
     pub fn new(state: AppState, req: Request<Body>, params: Params) -> Context {
         Context {
             state,
@@ -27,6 +34,7 @@ impl Context {
         }
     }
 
+    /// pub async fn body_json<T: serde::de::DeserializeOwned>(&mut self) -> Result<T, Error>
     pub async fn body_json<T: serde::de::DeserializeOwned>(&mut self) -> Result<T, Error> {
         let body_bytes = match self.body_bytes {
             Some(ref v) => v,

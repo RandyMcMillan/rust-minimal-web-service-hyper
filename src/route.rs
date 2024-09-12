@@ -6,6 +6,7 @@ use std::sync::Arc;
 type Response = hyper::Response<hyper::Body>;
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
+/// pub async fn route
 pub async fn route(
     router: Arc<Router>,
     req: Request<hyper::Body>,

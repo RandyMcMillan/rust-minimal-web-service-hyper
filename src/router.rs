@@ -6,7 +6,9 @@ use route_recognizer::{Match, Params, Router as InternalRouter};
 use std::collections::HashMap;
 
 #[async_trait]
+/// pub trait Handler: Send + Sync + 'static
 pub trait Handler: Send + Sync + 'static {
+    /// async fn invoke(&self, context: Context) -> Response;
     async fn invoke(&self, context: Context) -> Response;
 }
 
@@ -22,11 +24,15 @@ where
     }
 }
 
+/// pub struct RouterMatch<'a>
 pub struct RouterMatch<'a> {
+    /// pub handler: &'a dyn Handler,
     pub handler: &'a dyn Handler,
+    /// pub params: Params,
     pub params: Params,
 }
 
+/// pub struct Router
 pub struct Router {
     method_map: HashMap<Method, InternalRouter<Box<dyn Handler>>>,
 }
@@ -38,12 +44,14 @@ impl Default for Router {
 }
 
 impl Router {
+    /// pub fn new() -> Router
     pub fn new() -> Router {
         Router {
             method_map: HashMap::default(),
         }
     }
 
+    /// pub fn get(&mut self, path: &str, handler: Box\<dyn Handler\>)
     pub fn get(&mut self, path: &str, handler: Box<dyn Handler>) {
         self.method_map
             .entry(Method::GET)
@@ -51,6 +59,7 @@ impl Router {
             .add(path, handler)
     }
 
+    /// pub fn post(&mut self, path: &str, handler: Box\<dyn Handler\>)
     pub fn post(&mut self, path: &str, handler: Box<dyn Handler>) {
         self.method_map
             .entry(Method::POST)
@@ -58,6 +67,7 @@ impl Router {
             .add(path, handler)
     }
 
+    /// pub fn route(&self, path: &str, method: &Method) -> RouterMatch<'_>
     pub fn route(&self, path: &str, method: &Method) -> RouterMatch<'_> {
         if let Some(Match { handler, params }) = self
             .method_map
@@ -77,6 +87,7 @@ impl Router {
     }
 }
 
+/// pub async fn not_found_handler(_cx: Context) -> Response
 pub async fn not_found_handler(_cx: Context) -> Response {
     hyper::Response::builder()
         .status(StatusCode::NOT_FOUND)
@@ -84,23 +95,31 @@ pub async fn not_found_handler(_cx: Context) -> Response {
         .unwrap()
 }
 
+/// pub trait IntoResponse: Send + Sized
 pub trait IntoResponse: Send + Sized {
+    /// fn into_response(self) -> Response;
     fn into_response(self) -> Response;
 }
 
+/// impl IntoResponse for Response
 impl IntoResponse for Response {
+    /// fn into_response(self) -> Response
     fn into_response(self) -> Response {
         self
     }
 }
 
+/// impl IntoResponse for &'static str
 impl IntoResponse for &'static str {
+    /// fn into_response(self) -> Response
     fn into_response(self) -> Response {
         Response::new(self.into())
     }
 }
 
+/// impl IntoResponse for String
 impl IntoResponse for String {
+    /// fn into_response(self) -> Response
     fn into_response(self) -> Response {
         Response::new(self.into())
     }
