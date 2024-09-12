@@ -46,6 +46,7 @@ async fn main() {
             assign_next = true;
         }
     }
+    port = port_is_available(port).await;
 
     let str_port = port.to_string();
     let mut some_state = "state".to_string();
