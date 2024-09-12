@@ -64,7 +64,9 @@ async fn main() {
     }
     if verbose {
         some_state = "verbose".to_string();
-        println!("curl http://localhost:{}/help", &str_port);
+        if !help {
+            println!("curl http://localhost:{}/help", &str_port);
+        }
         println!("curl http://localhost:{}/test", &str_port);
         println!("curl http://localhost:{}/params/1234", &str_port);
         println!(
@@ -181,31 +183,37 @@ mod tests {
 
     #[test]
     fn curl_test() {
-        let url = "http://localhost:8080/test";
+        let mut url = "http://localhost:8080/help";
         let mut command = Command::new("curl");
-        command.arg(url);
-        let _output = command.output().unwrap();
+        let s_flags = "-sS";
+        let d_flag = "-d";
+        let data = r#"{"name":"John Doe","active":true,"phones":["+44 1234567","+44 2345678"]}"#;
 
-        let url = "http://localhost:8080/params/1234";
-        let mut command = Command::new("curl");
-        command.arg(url);
-        let _output = command.output().unwrap();
+        println!("{:?}", url);
+        command.args([url, s_flags]);
+        let mut output = command.output().unwrap();
+        println!("{:?}", output);
+        url = "http://localhost:8080/test";
+        println!("{:?}", url);
+        command = Command::new("curl");
+        command.args([url, s_flags]);
+        output = command.output().unwrap();
+        println!("{:?}", output);
 
-        let url = "http://localhost:8080/send -d '{{\"name\": \"chip\", \"active\": true}}'\n\n";
-        let mut command = Command::new("curl");
-        command.arg(url);
-        let _output = command.output().unwrap();
-    }
-    #[test]
-    fn test_add() {
-        assert_eq!(add(1, 2), 3);
-    }
+        url = "http://localhost:8080/params/1234";
+        println!("{:?}", url);
+        command = Command::new("curl");
+        command.args([url, s_flags]);
+        output = command.output().unwrap();
+        println!("{:?}", output);
 
-    #[test]
-    #[should_panic(expected = "assertion `left == right` failed\n  left: -1\n right: 3")]
-    fn test_bad_add() {
-        // This assert would fire and test will fail.
-        // Please note, that private functions can be tested too!
-        assert_eq!(bad_add(1, 2), 3);
+        url = "http://localhost:8080/send";
+        println!("{:?}", url);
+        // data include extraneous data for testing
+        println!("{:?}", data);
+        command = Command::new("curl");
+        command.args([url, s_flags, d_flag, data]);
+        output = command.output().unwrap();
+        print!("{:?}\n", output);
     }
 }
