@@ -56,7 +56,10 @@ async fn main() {
     router.get("/help", Box::new(gnostr_server::handler::help));
     router.get("/test", Box::new(gnostr_server::handler::test_handler));
     router.post("/send", Box::new(gnostr_server::handler::send_handler));
-    router.get("/params/:some_param", Box::new(gnostr_server::handler::param_handler));
+    router.get(
+        "/params/:some_param",
+        Box::new(gnostr_server::handler::param_handler),
+    );
 
     let shared_router = std::sync::Arc::new(router);
     let new_service = hyper::service::make_service_fn(move |_| {

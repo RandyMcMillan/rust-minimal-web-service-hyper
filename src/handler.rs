@@ -40,6 +40,6 @@ pub async fn send_handler(mut ctx: Context) -> Response {
 }
 
 pub async fn param_handler(ctx: Context) -> String {
-    let param =  ctx.params.find("some_param").unwrap_or("empty");
+    let param = ctx.params.find("some_param").unwrap_or("empty");
     format!("param called, param was: {}", param)
 }

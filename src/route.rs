@@ -1,11 +1,7 @@
-use hyper::{
-    Request,
-};
 use crate::context::{AppState, Context};
 use crate::router::Router;
+use hyper::Request;
 use std::sync::Arc;
-
-
 
 type Response = hyper::Response<hyper::Body>;
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;

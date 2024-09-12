@@ -32,10 +32,10 @@ pub struct Router {
 }
 
 impl Default for Router {
-     fn default() -> Self {
-         Self::new()
-     }
- }
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl Router {
     pub fn new() -> Router {
