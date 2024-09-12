@@ -1,4 +1,4 @@
-use crate::{Context, Response};
+use crate::{context::Context, Response};
 use hyper::StatusCode;
 use serde::Deserialize;
 

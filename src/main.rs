@@ -1,24 +1,5 @@
-use crate::context::*;
-use crate::route::route;
-use hyper::{
-    service::{make_service_fn, service_fn},
-    Server,
-};
-use router::Router;
 use std::env;
-use std::process::exit;
-use std::sync::Arc;
-
-mod context;
-mod handler;
-mod router;
-mod route;
-
-use sysinfo::{get_current_pid, Pid, System};
-
-type Response = hyper::Response<hyper::Body>;
-type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
-
+use gnostr_server::*;
 #[tokio::main]
 async fn main() {
     let mut port = 8080; // Default port
@@ -43,7 +24,7 @@ async fn main() {
             let parsed_port = port_str.parse::<u16>();
             if let Err(err) = parsed_port {
                 eprintln!("Error parsing port: {}", err);
-                exit(1);
+                std::process::exit(1);
             }
             port = parsed_port.unwrap();
             break; // Exit after finding the port argument
@@ -72,22 +53,22 @@ async fn main() {
         );
     }
 
-    let mut router: Router = Router::new();
+    let mut router: router::Router = router::Router::new();
     router.get("/help", Box::new(handler::help));
     router.get("/test", Box::new(handler::test_handler));
     router.post("/send", Box::new(handler::send_handler));
     router.get("/params/:some_param", Box::new(handler::param_handler));
 
-    let shared_router = Arc::new(router);
-    let new_service = make_service_fn(move |_| {
-        let app_state = AppState {
+    let shared_router = std::sync::Arc::new(router);
+    let new_service = hyper::service::make_service_fn(move |_| {
+        let app_state = context::AppState {
             state_thing: some_state.clone(),
         };
 
         let router_capture = shared_router.clone();
         async {
-            Ok::<_, Error>(service_fn(move |req| {
-                route(router_capture.clone(), req, app_state.clone())
+            Ok::<_, Error>(hyper::service::service_fn(move |req| {
+                route::route(router_capture.clone(), req, app_state.clone())
             }))
         }
     });
@@ -95,11 +76,11 @@ async fn main() {
     let addr = format!("0.0.0.0:{}", port)
         .parse()
         .expect("address creation works");
-    let server = Server::bind(&addr).serve(new_service);
-    match get_current_pid() {
+    let server = hyper::Server::bind(&addr).serve(new_service);
+    match sysinfo::get_current_pid() {
         Ok(pid) => {
-            let s = System::new_all();
-            if let Some(process) = s.process(Pid::from(pid)) {
+            let s = sysinfo::System::new_all();
+            if let Some(process) = s.process(sysinfo::Pid::from(pid)) {
                 println!(
                     "{{\"{}\",\"{}\",\"{}\",\"{}\"}}",
                     process.name(),

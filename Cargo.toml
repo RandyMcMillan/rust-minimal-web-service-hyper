@@ -1,6 +1,6 @@
 [package]
-name = "gnostr-serve"
-version = "0.0.1"
+name = "gnostr_server"
+version = "0.0.2"
 authors = ["gnostr <admin@gnostr.org>", "Mario Zupan <mario@zupzup.org>"]
 edition = "2018"
 

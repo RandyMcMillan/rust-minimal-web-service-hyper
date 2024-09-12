@@ -1,4 +1,4 @@
-use crate::{Context, Response};
+use crate::{context::Context, Response};
 use async_trait::async_trait;
 use futures::future::Future;
 use hyper::{Method, StatusCode};
@@ -71,7 +71,7 @@ impl Router {
     }
 }
 
-async fn not_found_handler(_cx: Context) -> Response {
+pub async fn not_found_handler(_cx: Context) -> Response {
     hyper::Response::builder()
         .status(StatusCode::NOT_FOUND)
         .body("NOT FOUND".into())
