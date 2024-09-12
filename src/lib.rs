@@ -1,3 +1,7 @@
+#![warn(missing_docs)]
+/// gnostr: hypbrid git+nostr relay
+///
+///
 pub mod context;
 pub mod handler;
 pub mod route;
